@@ -1,50 +1,51 @@
+#include <Keyboard.h>
 #include <MPU6050_tockn.h>
 #include <Wire.h>
-#include <Keyboard.h>
-MPU6050 mpu6050(Wire);
-int valx;
-int fl = 3;
-int fr = 6;
-int bl = 10;
-int br = 11;
-int thrust;
-int fl_thrust, fr_thrust, bl_thrust, br_thrust;
-double angx, angy, less_angx, less_angy, more_angx, more_angy, start_angx, start_angy, var;
+
+MPU6050 MPU(Wire);
+
+int valx, fl_thrust, fr_thrust, bl_thrust, br_thrust;
+int fl = 3, fr = 6, bl = 10, br = 11;
 int desired_height = 12;
-int trigPin = 4;
-int echoPin = 5;
-int array[10][7];
+int trigPin = 4, echoPin = 5;
 int i = 1;
 
-void setup() {
- Serial.begin(9600);
-fl_thrust = 80;
-fr_thrust = 140;
-bl_thrust = 80;
-br_thrust = 80;
- pinMode(echoPin, INPUT);
- pinMode(trigPin,OUTPUT);
-int height = 0;
-init_esc();
- Wire.begin();
-Serial.print("HI");
- mpu6050.begin();
- mpu6050.calcGyroOffsets(true);
+float angleRoll, anglePitch, last_angleRoll, last_anglePitch;
+float GyroX, GyroY, AccX, AccY;
 
- const double start_angx = mpu6050.getAngleX();
- const double start_angy = mpu6050.getAngleY();
- delay(1000);
-  var = 40;
-  less_angx = start_angx - var;
-  more_angx = start_angx + var;
-  less_angy = start_angy - var;
-  more_angy = start_angy + var;
+// PID values for roll.
+float pidPGainRoll = 1.;
+float pidIGainRoll = 0.04;
+float pidDGainRoll = 18;
+float pidMaxRoll = 400;
+// PID values for pitch.
+float pidPGainPitch = pidPGainRoll;
+float pidIGainPitch = pidIGainRoll;
+float pidDGainPitch = pidDGainRoll;
+float pidMaxPitch = pidMaxRoll;
+// PID values for yaw.
+float pidPGainYaw = 4.0;
+float pidIGainPitchaw = 0.02;
+float pidDGainYaw = 0.0;
+float pidMaxYaw = pidMaxRoll;
+
+void setup()
+{
+  Serial.begin(9600);
+  Wire.begin();
+  MPU.begin();
+  MPU.calcGyroOffsets(true);
+  init_esc();
+
+  pinMode(echoPin, INPUT);
+  pinMode(trigPin, OUTPUT);
 }
 
 
 void loop() {  
-  Serial.println("Enter in a motor ");
-  while (Serial.available() == 0) {}
+Serial.println("Enter in a motor ");
+while (Serial.available() == 0)
+{}
   valx = Serial.parseInt();
 if(valx == 1)
 fl_thrust += 1;
@@ -90,12 +91,6 @@ void init_esc(){
  analogWrite(bl, thrust);
  analogWrite(br, thrust);
  delay(1000);
-//thrust = 254;
-// analogWrite(fl, thrust);
-// analogWrite(fr, thrust);
-// analogWrite(bl, thrust);
-// analogWrite(br, thrust);
-// delay(1000);
  
  thrust = 1;
  Serial.println(thrust);
@@ -112,3 +107,70 @@ void init_esc(){
 //bool is_thrust_min(){
 //  return (fl_thrust > 0 && fr_thrust > 0 && bl_thrust > 0 && br_thrust > 0);
 //}
+
+
+void calculate_pid() {
+  // Read values from MPU6050 and deal with noise.
+angleRoll = MPU.getAngleX();
+angleRoll = (angleRoll * .9996) + (MPU.getAccX() * .0004);
+anglePitch = MPU.getAngleY();
+anglePitch = (anglePitch * .9996) + (MPU.getAccY() * .0004);
+
+LevelAdjRoll = angleRoll * 15;
+LevelAdjPitch = anglePitch * 15;
+
+// Roll Calculations
+pidErrTemp = angleRoll - pidSetpointRoll;
+pidIMemRoll += pidIGainRoll + pidErrTemp;
+if (pidIMemRoll > pidMaxRoll) {
+  pidIMemRoll = pidMaxRoll;
+}
+else if (pidIMemRoll < pidMaxRoll){
+  pidIMemRoll = pidMaxRoll * -1;
+}
+
+pidOutputRoll = pidPGainRoll * pidErrTemp + pidIMemRoll + pidDGainRoll * (pidErrTemp - pidLastDErrRoll);
+if (pidOutputRoll > pidMaxRoll) {
+  pidOutputRoll = pidMaxRoll;
+}
+else if (pidOutputRoll < pidMaxRoll) {
+  pidOutputRoll = pidMaxRoll * -1;
+}
+
+// Pitch Calculations
+pidErrTemp = anglePitch - pidSetpointPitch;
+pidIMemPitch += pidIGainPitch + pidErrTemp;
+if (pidIMemPitch > pidMaxPitch) {
+  pidIMemPitch = pidMaxPitch;
+}
+else if (pidIMemPitch < pidMaxPitch){
+  pidIMemPitch = pidMaxPitch * -1;
+}
+
+pidOutputPitch = pidPGainPitch * pidErrTemp + pidIMemPitch + pidDGainPitch * (pidErrTemp - pidLastDErrPitch);
+if (pidOutputPitch > pidMaxPitch) {
+  pidOutputPitch = pidMaxPitch;
+}
+else if (pidOutputPitch < pidMaxPitch) {
+  pidOutputPitch = pidMaxPitch * -1;
+}
+
+// Yaw Calculations
+pidErrTemp = angleYaw - pidSetpointYaw;
+pidIMemYaw += pidIGainYaw + pidErrTemp;
+if (pidIMemYaw > pidMaxYaw) {
+  pidIMemYaw = pidMaxYaw;
+}
+else if (pidIMemYaw < pidMaxYaw){
+  pidIMemYaw = pidMaxYaw * -1;
+}
+
+pidOutputYaw = pidPGainYaw * pidErrTemp + pidIMemYaw + pidDGainYaw * (pidErrTemp - pidLastDErrYaw);
+if (pidOutputYaw > pidMaxYaw) {
+  pidOutputYaw = pidMaxYaw;
+}
+else if (pidOutputYaw < pidMaxYaw) {
+  pidOutputYaw = pidMaxYaw * -1;
+}
+pidLastDErrYaw = pidErrTemp;
+}
