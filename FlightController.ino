@@ -12,6 +12,7 @@ int i = 1;
 
 float angleRoll, anglePitch, last_angleRoll, last_anglePitch;
 float GyroX, GyroY, AccX, AccY;
+float pidSetpointRoll, pidSetpointPitch, pidSetpointYaw;
 
 // PID values for roll.
 float pidPGainRoll = 1.;
