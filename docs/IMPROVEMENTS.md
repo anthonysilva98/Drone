@@ -12,26 +12,6 @@ Comprehensive list of improvements, bug fixes, and features needed to achieve st
 
 ## Phase 1: Critical Bug Fixes 🔴
 
-### BUG-001: PID Integral Term Calculation Error
-**Priority**: 🔴 CRITICAL
-**File**: `firmware/flightController/flightController.ino`
-**Lines**: 60, 70, 80
-
-**Issue**:
-```cpp
-// CURRENT (WRONG):
-pidIMemRoll += pidIGainRoll + pidErrTemp;
-
-// SHOULD BE:
-pidIMemRoll += pidIGainRoll * pidErrTemp;
-```
-
-**Impact**: I-term accumulates incorrectly, causing unpredictable behavior
-
-**Fix Difficulty**: Easy (3 line changes)
-
----
-
 ### BUG-002: PID Output Clamping Logic Error
 **Priority**: 🔴 CRITICAL
 **File**: `firmware/flightController/flightController.ino`

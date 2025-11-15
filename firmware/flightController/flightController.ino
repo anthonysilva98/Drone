@@ -57,7 +57,7 @@ LevelAdjPitch = anglePitch * 15;
 
 // Roll Calculations
 pidErrTemp = angleRoll - pidSetpointRoll;
-pidIMemRoll += pidIGainRoll + pidErrTemp;
+pidIMemRoll += pidIGainRoll * pidErrTemp;
 if (pidIMemRoll > pidMaxRoll) pidIMemRoll = pidMaxRoll;
 else if (pidIMemRoll < pidMaxRoll * -1) pidIMemRoll = pidMaxRoll * -1;
 
@@ -67,7 +67,7 @@ else if (pidOutputRoll < pidMaxRoll) pidOutputRoll = pidMaxRoll * -1;
 
 // Pitch Calculations
 pidErrTemp = anglePitch - pidSetpointPitch;
-pidIMemPitch += pidIGainPitch + pidErrTemp;
+pidIMemPitch += pidIGainPitch * pidErrTemp;
 if (pidIMemPitch > pidMaxPitch) pidIMemPitch = pidMaxPitch;
 else if (pidIMemPitch < pidMaxPitch) pidIMemPitch = pidMaxPitch * -1;
 
@@ -77,7 +77,7 @@ else if (pidOutputPitch < pidMaxPitch) pidOutputPitch = pidMaxPitch * -1;
 
 // Yaw Calculations
 pidErrTemp = angleYaw - pidSetpointYaw;
-pidIMemYaw += pidIGainYaw + pidErrTemp;
+pidIMemYaw += pidIGainYaw * pidErrTemp;
 if (pidIMemYaw > pidMaxYaw) pidIMemYaw = pidMaxYaw;
 else if (pidIMemYaw < pidMaxYaw) pidIMemYaw = pidMaxYaw * -1;
 
