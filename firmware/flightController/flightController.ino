@@ -63,7 +63,7 @@ else if (pidIMemRoll < pidMaxRoll * -1) pidIMemRoll = pidMaxRoll * -1;
 
 pidOutputRoll = pidPGainRoll * pidErrTemp + pidIMemRoll + pidDGainRoll * (pidErrTemp - pidLastDErrRoll);
 if (pidOutputRoll > pidMaxRoll) pidOutputRoll = pidMaxRoll;
-else if (pidOutputRoll < pidMaxRoll) pidOutputRoll = pidMaxRoll * -1;
+else if (pidOutputRoll < -pidMaxRoll) pidOutputRoll = -pidMaxRoll;
 
 // Pitch Calculations
 pidErrTemp = anglePitch - pidSetpointPitch;
@@ -73,7 +73,7 @@ else if (pidIMemPitch < pidMaxPitch) pidIMemPitch = pidMaxPitch * -1;
 
 pidOutputPitch = pidPGainPitch * pidErrTemp + pidIMemPitch + pidDGainPitch * (pidErrTemp - pidLastDErrPitch);
 if (pidOutputPitch > pidMaxPitch) pidOutputPitch = pidMaxPitch;
-else if (pidOutputPitch < pidMaxPitch) pidOutputPitch = pidMaxPitch * -1;
+else if (pidOutputPitch < -pidMaxPitch) pidOutputPitch = -pidMaxPitch;
 
 // Yaw Calculations
 pidErrTemp = angleYaw - pidSetpointYaw;
@@ -83,7 +83,7 @@ else if (pidIMemYaw < pidMaxYaw) pidIMemYaw = pidMaxYaw * -1;
 
 pidOutputYaw = pidPGainYaw * pidErrTemp + pidIMemYaw + pidDGainYaw * (pidErrTemp - pidLastDErrYaw);
 if (pidOutputYaw > pidMaxYaw) pidOutputYaw = pidMaxYaw;
-else if (pidOutputYaw < pidMaxYaw) pidOutputYaw = pidMaxYaw * -1;
+else if (pidOutputYaw < -pidMaxYaw) pidOutputYaw = -pidMaxYaw;
 pidLastDErrYaw = pidErrTemp;
 }
 

@@ -12,26 +12,6 @@ Comprehensive list of improvements, bug fixes, and features needed to achieve st
 
 ## Phase 1: Critical Bug Fixes 🔴
 
-### BUG-002: PID Output Clamping Logic Error
-**Priority**: 🔴 CRITICAL
-**File**: `firmware/flightController/flightController.ino`
-**Lines**: 66, 76, 86
-
-**Issue**:
-```cpp
-// CURRENT (WRONG):
-else if (pidOutputRoll < pidMaxRoll) pidOutputRoll = pidMaxRoll * -1;
-
-// SHOULD BE:
-else if (pidOutputRoll < -pidMaxRoll) pidOutputRoll = -pidMaxRoll;
-```
-
-**Impact**: Lower bound clamping never triggers, allows extreme negative values
-
-**Fix Difficulty**: Easy (3 line changes)
-
----
-
 ### BUG-003: Increment/Decrement Functions Don't Work
 **Priority**: 🟡 HIGH
 **File**: `firmware/flightController/flightController.ino`
