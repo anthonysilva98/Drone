@@ -61,7 +61,6 @@ See [hardware/README.md](hardware/README.md) for complete wiring diagrams and bi
 ```
 StanHacks1-AutoDrone/
 ├── README.md                      # This file
-├── CHANGELOG.md                   # Version history
 ├── firmware/                      # Arduino firmware
 │   └── flightController/
 │       └── flightController.ino  # Main flight controller code
